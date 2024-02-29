@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Documentation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 250px;
+      padding-top: 3rem;
+      background-color: #f8f9fa;
+    }
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .json-output {
+      background-color: #f8f9fa;
+      padding: 3px;
+      border-radius: 2px;
+      white-space: pre-wrap; /* agar teks panjang dapat dibungkus secara otomatis */
+    }
+    .endpoint-code {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    .small-word {
+      font-size: 14px;
+    }
+    .submenu {
+      display: none;
+      margin-left: 20px;
+    }
+    .list-group-item:hover .submenu {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h3 class="text-center mb-4">Endpoints</h3>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <a href="#">/stamping</a>
+          <ul class="submenu">
+            <li><a href="user.html">Users</a></li>
+            <li><a href="auth.html">Auth</a></li>
+            <!-- <li><a href="user.html#delete-users">DELETE</a></li> -->
+            <!-- Tambahkan submenu untuk endpoint users di sini -->
+          </ul>
+        </li>
+        <!-- Tambahkan endpoint lainnya di sini -->
+      </ul>
+  </div>
+
+  <div class="content">
+    <h1 class="text-center mb-4">Documentation</h1>
+
+    <div id="users" class="accordion">
+      <!-- GET USERS -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="get-users-heading">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#get-users-content" aria-expanded="true" aria-controls="get-users-content">
+            GET /users
+          </button>
+        </h2>
+        <div id="get-users-content" class="accordion-collapse collapse show" aria-labelledby="get-users-heading" data-bs-parent="#users">
+          <div class="accordion-body">
+            <p>Get all users.</p>
+            <pre class="endpoint-code"><code>GET http://192.168.148.125:5000/users</code></pre>
+            <p>Response :</p>
+            <pre class="json-output">
+              {
+                "message": [
+                  {
+                    "id_user": 1,
+                    "username": "John Doe",
+                    "email": "John.doe@example.com",
+                    "created_at": "2024-02-22T07:15:06.000Z",
+                    "updated_at": "2024-02-28T04:37:45.000Z",
+                    "deleted_at": null
+                  },
+                  {
+                    "id_user": 2,
+                    "username": "John Saw",
+                    "email": "John.saw@example.com",
+                    "created_at": "2024-02-22T07:15:06.000Z",
+                    "updated_at": "2024-02-28T04:37:45.000Z",
+                    "deleted_at": null
+                  },
+                ]
+              }</pre>
+          </div>
+        </div>
+      </div>
+      <!-- POST USERS -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="post-users-heading">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#post-users-content" aria-expanded="true" aria-controls="post-users-content">
+            POST /users
+          </button>
+        </h2>
+        <div id="post-users-content" class="accordion-collapse collapse show" aria-labelledby="post-users-heading" data-bs-parent="#users">
+          <div class="accordion-body">
+            <p>Create a new user.</p>
+            <pre class="endpoint-code"><code>POST http://192.168.148.125:5000/users/signup</code></pre>
+            <p>Request Body :</p>
+            <pre class="json-output">
+            {
+              "username":"John",
+              "password":"blablabla",
+              "email":"John@example.com"
+            }</pre>
+            <p>Response :</p>
+            <p class="small-word">You will get a jsonwebtoken which contains user data to make the next request</p>
+            <pre class="json-output">
+            {
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoxLCJwYXNzd29yZCI6IiQyYiQxMCQ4Umw0NkVKSzJmcjM3NW5pOEVVUWNPcktrdXNHUTFrTkVSbHN4T0NldEY4cHJZaC90VEtUZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcwOTE3NDE1OCwiZXhwIjoxNzA5MTc3NzU4fQ.URAfQ9q0ckdzwAi8yA1019K2tcrAozIpfTdIYHk0qVI"
+            }</pre>
+          </div>
+        </div>
+      </div>
+      <!-- DELETE USERS -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="delete-users-heading">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#delete-users-content" aria-expanded="true" aria-controls="delete-users-content">
+            DELETE /users/:id
+          </button>
+        </h2>
+        <div id="delete-users-content" class="accordion-collapse collapse show" aria-labelledby="delete-users-heading" data-bs-parent="#users">
+          <div class="accordion-body">
+            <p>Delete a user by ID.</p>
+            <pre class="endpoint-code"><code>DELETE http://192.168.148.125:5000/users/123</code></pre>
+            <p>Response :</p>
+            <pre class="json-output">
+              {
+                "message": "User deleted successfully"
+              }</pre>
+          </div>
+        </div>
+      </div>
+      <!-- PATCH USERS -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="patch-users-heading">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#patch-users-content" aria-expanded="true" aria-controls="patch-users-content">
+            PATCH /users/:id
+          </button>
+        </h2>
+        <div id="patch-users-content" class="accordion-collapse collapse show" aria-labelledby="patch-users-heading" data-bs-parent="#users">
+          <div class="accordion-body">
+            <p>Update a user by ID.</p>
+            <pre class="endpoint-code"><code>PATCH http://example.com/users/123</code></pre>
+            <p>Request Body :</p>
+            <pre class="json-output">
+            {
+              "username":"example",
+              "password":"example123",
+              "email":"example@example.com"
+            }</pre>
+            <p>Response :</p>
+            <pre class="json-output">
+            {
+              "message": "Update user data successfully"
+            }</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tambahkan accordion untuk setiap endpoint API -->
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
