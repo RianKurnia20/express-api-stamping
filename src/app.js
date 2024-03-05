@@ -22,6 +22,7 @@ const app = express();
 // Middleware used
 app.use(middlewareHandle.errorMessage) // error message
 app.use(middlewareHandle.logRequest) // log request
+app.use(middlewareHandle.allowCrossDomain)
 
 // ALLOW JSON RESPONSE AND PUBLIC FOLDER
 app.use(express.json())
