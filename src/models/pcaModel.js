@@ -11,7 +11,11 @@ const addPca = async (id_machine, id_product, id_kanagata, speed) => {
 };
 
 const getAllPca = async () => {
-  return await runQuery('SELECT * FROM pca WHERE deleted_at IS NULL')
+  return await runQuery(`
+  SELECT pca.id_pca, pca.id_machine, pca.id_product, pca.id_kanagata, pca.speed, pca.created_at, pca.updated_at, product.name as name
+  FROM pca
+  JOIN product ON pca.id_product = product.id_product
+  WHERE pca.deleted_at is null`)
 }
 
 const updatePcaById = async (id_pca, pcaData) => {
@@ -29,10 +33,18 @@ const deletePcaById = async (id) => {
   return true;
 };
 
+const getPcaByIdProduct = async (id_product) => {
+  return await runQuery(`
+  SELECT *, product.name as name
+  FROM pca
+  JOIN product ON pca.id_product = product.id_product
+  WHERE product.id_product = ?`, [id_product])
+}
 
 module.exports = {
   getAllPca,
   updatePcaById,
   deletePcaById,
-  addPca
+  addPca,
+  getPcaByIdProduct
 }

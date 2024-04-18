@@ -8,5 +8,7 @@ router.get('/date', productionController.getProductionByDate);
 router.get('/product', productionController.getProductionByIdProduct);
 router.get('/machine', productionController.getProductionByIdMachine);
 
+router.patch('/:id', productionController.updateProduction);
+
 
 module.exports = router

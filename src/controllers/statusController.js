@@ -1,8 +1,12 @@
 const statusModel  = require('../models/statusModel.js');
 
-const handleResponse = (res, message, status = 200) => {
-  res.status(status).json({ message });
-};
+const handleResponse = (res, message, status = 200, data = null) => {
+  if (data !== null) {
+    res.status(status).json({ message, data });
+  } else {  
+    res.status(status).json({ message });
+  };
+}
 
 const handleError = (res, error) => {
   console.error('Error:', error);
@@ -11,9 +15,9 @@ const handleError = (res, error) => {
 
 const getAllStatus = async(req, res) => {
   try {
-    const stats = await statusModel.getAllStatus();
-    const message = stats.length === 0 ? 'No status available' : stats;
-    handleResponse(res, message)
+    const data = await statusModel.getAllStatus();
+    const message = data.length === 0 ? 'No status available' : 'Success';
+    handleResponse(res, message, 200, data)
   } catch (error) {
     handleError(res, error)
   }

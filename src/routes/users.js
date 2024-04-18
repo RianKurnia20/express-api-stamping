@@ -20,6 +20,8 @@ router.post('/signup', [
   check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
 ], usersController.createNewUser);
 
+// router.post('/signup', usersController.createNewUser);
+
 // GET - READ
 router.get('/', usersController.getAllUsers);
 router.get('/:id', usersController.getUserById);

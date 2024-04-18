@@ -1,8 +1,12 @@
 const machineModel = require('../models/machineModel.js');
 
-const handleResponse = (res, message, status = 200) => {
-  res.status(status).json({ message });
-};
+const handleResponse = (res, message, status = 200, data = null) => {
+  if (data !== null) {
+    res.status(status).json({ message, data });
+  } else {  
+    res.status(status).json({ message });
+  };
+}
 
 const handleError = (res, error) => {
   console.error('Error:', error);
@@ -33,9 +37,9 @@ const newMachine = async (req, res) => {
 
 const updateMachine = async (req, res) => {
   try {
-    const { actual_shot, limit_shot, address } = req.body;
-    if(!actual_shot || !limit_shot || !address) {
-      handleResponse(res, 'All fields are required', 400)
+    const { actual_shot, limit_shot, shift, address } = req.body;
+    if(actual_shot === undefined || limit_shot === undefined || address === undefined) {
+      return handleResponse(res, 'All fields are required', 400)
     }
     await machineModel.updateMachineById(req.params.id, req.body);
     handleResponse(res, 'Update machine data successfully');
@@ -47,8 +51,8 @@ const updateMachine = async (req, res) => {
 const getAllMachines = async (req, res) => {
   try {
     const machines = await machineModel.getAllMachine();
-    const message = machines.length === 0 ? 'No machines data available, Add some machines data' : machines;
-    handleResponse(res, message);
+    const data = machines.length === 0 ? 'No machines data available, Add some machines data' : machines;
+    handleResponse(res, 'Success', 200, data);
   } catch (error) {
     handleError(res, error);
   }

@@ -1,8 +1,12 @@
 const kanagataModel = require('../models/kanagataModel.js');
 
-const handleResponse = (res, message, status = 200) => {
-  res.status(status).json({ message });
-};
+const handleResponse = (res, message, status = 200, data = null) => {
+  if (data !== null) {
+    res.status(status).json({ message, data });
+  } else {  
+    res.status(status).json({ message });
+  };
+}
 
 const handleError = (res, error) => {
   console.error('Error:', error);
@@ -14,7 +18,7 @@ const newKanagata = async (req, res) => {
   const actualShot = actual_shot || 0
   const limitShot = limit_shot || 0
   try {
-    if(!id_kanagata || actualShot || limitShot) {
+    if(!id_kanagata || actualShot === undefined || limitShot === undefined) {
       return handleResponse(res, 'All fields are required', 400)
     }
 
@@ -36,7 +40,7 @@ const updateKanagata = async (req, res) => {
     const { id_kanagata, actual_shot, limit_shot } = req.body;
 
     // Validasi key dan value pada request body
-    if (!id_kanagata || !actual_shot || !limit_shot) {
+    if (!id_kanagata || actual_shot === undefined || limit_shot === undefined ) {
       return handleResponse(res, 'All fields are required', 400)
     }
     // Validasi kanagata id yang ingin di update apakah ada pada table
@@ -45,10 +49,10 @@ const updateKanagata = async (req, res) => {
       return handleResponse(res, 'Kanagata with id: ' + id + ' not found', 404);
     }
     // Validasi new id pada req.body apakah ada duplicate primary key ?
-    const checkNewKanagata = await kanagataModel.findKanagataById(id_kanagata)
-    if(checkNewKanagata[0]){
-      return handleResponse(res, 'Kanagata with id: ' + id_kanagata + ' already exist ', 400)
-    }
+    // const checkNewKanagata = await kanagataModel.findKanagataById(id_kanagata)
+    // if(checkNewKanagata[0]){
+    //   return handleResponse(res, 'Kanagata with id: ' + id_kanagata + ' already exist ', 400)
+    // }
 
     await kanagataModel.updateKanagataById(id, req.body);
     handleResponse(res, 'Update kanagata data successfully')
@@ -60,8 +64,8 @@ const updateKanagata = async (req, res) => {
 const getAllKanagatas = async(req, res) => {
   try {
     const kanagatas = await kanagataModel.getAllKanagata();
-    const message = kanagatas.length === 0 ? 'No kanagata data available, add some kanagata data' : kanagatas;
-    handleResponse(res, message)
+    const data = kanagatas.length === 0 ? 'No kanagata data available, add some kanagata data' : kanagatas;
+    handleResponse(res, 'Success', 200, data)
   } catch (error) {
     handleError(res, error)
   }

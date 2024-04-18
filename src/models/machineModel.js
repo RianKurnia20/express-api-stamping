@@ -11,8 +11,8 @@ const addMachine = async (id, address) => {
 };
 
 const updateMachineById = async (id, machineData) => {
-  const { actual_shot, limit_shot, address } = machineData;
-  await runQuery('UPDATE machine SET actual_shot = ?, limit_shot = ?, address = ? WHERE id_machine = ?', [actual_shot, limit_shot, address, id]);
+  const { actual_shot, limit_shot, shift, address } = machineData;
+  await runQuery('UPDATE machine SET actual_shot = ?, limit_shot = ?, shift = ?, address = ? WHERE id_machine = ?', [actual_shot, limit_shot,shift, address, id]);
   return true;
 };
 

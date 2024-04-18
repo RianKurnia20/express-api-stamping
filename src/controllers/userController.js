@@ -4,9 +4,13 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const userModel = require('../models/userModel');
 
-const handleResponse = (res, message, status = 200) => {
-  res.status(status).json({ message });
-};
+const handleResponse = (res, message, status = 200, data = null) => {
+  if (data !== null) {
+    res.status(status).json({ message, data });
+  } else {  
+    res.status(status).json({ message });
+  };
+}
 
 const handleError = (res, error) => {
   console.error('Error:', error);
@@ -37,14 +41,12 @@ const createNewUser = async (req, res) => {
 
     // Ambil data user untuk generate payload token JWT
     const dataUser = await userModel.findUserByUsername(username)
-    console.log(dataUser)
     if(!dataUser){
       return handleResponse(res, 'Authentication failed', 401);
     }
 
     // Buat payload untuk token JWT
     const payload = { id_user: dataUser[0].id_user, password: dataUser[0].password, role: dataUser[0].roles };
-    console.log(payload)
 
     // Variabel setting expired token
     const expiresIn = 60*60*1
@@ -86,8 +88,8 @@ const updateUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const users = await userModel.getAllUsers();
-    const message = users.length === 0 ? 'No users data available' : users
-    handleResponse(res, message)
+    const data = users.length === 0 ? 'No users data available' : users
+    handleResponse(res, 'Success', 200, data)
   } catch (error) {
     handleError(res, error)
   }
@@ -110,8 +112,8 @@ const deleteUser = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const user = await userModel.findUserById(req.params.id)
-    const message = user.length === 0 ? 'User not found' : user
-    handleResponse(res, message)
+    const data = user.length === 0 ? 'User not found' : user
+    handleResponse(res, 'Success', 200, data)
   } catch (error) {
     handleError(res, error)
   }

@@ -22,7 +22,7 @@ const app = express();
 // Middleware used
 app.use(middlewareHandle.errorMessage) // error message
 app.use(middlewareHandle.logRequest) // log request
-app.use(middlewareHandle.allowCrossDomain)
+app.use(middlewareHandle.allowCrossDomain) // allow cross domain for make a request to this api
 
 // ALLOW JSON RESPONSE AND PUBLIC FOLDER
 app.use(express.json())
@@ -35,8 +35,8 @@ app.use('/users', usersRoutes) // users endpoint ✔
 // productions endpoint ❌
 app.use(
   '/productions',
-  middlewareHandle.authenticateToken,
-  middlewareHandle.checkPermission('admin'),
+  // middlewareHandle.authenticateToken,
+  // middlewareHandle.checkPermission('admin'),
   // middlewareHandle.paginateResults,
   productionRoutes
 )

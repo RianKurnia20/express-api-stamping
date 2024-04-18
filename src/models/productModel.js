@@ -21,12 +21,16 @@ const findProductById = async (id) => {
 }
 
 const getAllProduct = async () => {
-  return await runQuery('SELECT * from product where deleted_at is null')
+  return await runQuery('SELECT * from product where deleted_at is null ORDER BY name asc')
 }
 
 const deleteProductByid = async (id) => {
     const currentTime = new Date().toISOString();
     await runQuery('UPDATE product SET deleted_at = ? WHERE id_product = ?', [currentTime, id]);
+
+    // delete query testing (not implemented)
+    // await runQuery('DELETE FROM product WHERE id_product = ?', [id]);
+
     return true; // Kembalikan true jika pengguna berhasil dihapus
 };
 

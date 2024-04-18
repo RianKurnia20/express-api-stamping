@@ -1,8 +1,12 @@
 const pcaModel = require('../models/pcaModel');
 
-const handleResponse = (res, message, status = 200) => {
-  res.status(status).json( {message} );
-};
+const handleResponse = (res, message, status = 200, data = null) => {
+  if (data !== null) {
+    res.status(status).json({ message, data });
+  } else {  
+    res.status(status).json({ message });
+  };
+}
 
 const handleError = (res, error) => {
   console.error('Error:', error);
@@ -12,7 +16,7 @@ const handleError = (res, error) => {
 const newPca = async (req, res) => {
   const { id_machine, id_product, id_kanagata, speed } = req.body;
   try {
-    if (!id_machine || !id_product || !id_kanagata || !speed) {
+    if (!id_machine || !id_product || !id_kanagata ) {
       return handleResponse(res, 'All fields are required', 400)
     }
     await pcaModel.addPca(id_machine, id_product, id_kanagata, speed);
@@ -24,9 +28,9 @@ const newPca = async (req, res) => {
 
 const getAllPca = async (req, res) => {
   try {
-    const pca = await pcaModel.getAllPca();
-    const message = pca.length === 0 ? 'No pca data available, Add some pca data' : pca;
-    handleResponse(res, message);
+    const data = await pcaModel.getAllPca();
+    const message = data.length === 0 ? 'No pca data available, Add some pca data' : 'Success';
+    handleResponse(res, message, 200, data);
   } catch (error) {
     handleError(res, error);
   }
@@ -35,7 +39,7 @@ const getAllPca = async (req, res) => {
 const updatePca = async (req, res) => {
   try {
     const { id_machine, id_product, id_kanagata, speed } = req.body;
-    if(!id_machine || !id_product || !id_kanagata || !speed) {
+    if(!id_machine || !id_product || !id_kanagata || speed === undefined) {
       return handleResponse(res, 'All fields are required', 400)
     }
     await pcaModel.updatePcaById(req.params.id, req.body);

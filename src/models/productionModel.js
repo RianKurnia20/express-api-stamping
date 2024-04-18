@@ -6,11 +6,24 @@ const runQuery = async (query, params = []) => {
 };
 
 const getAllProduction = async () => {
-  return await runQuery('SELECT * FROM production WHERE deleted_at is null')
+  return await runQuery(
+    `SELECT p.id_production, p.date, p.shift, p.ok, p.ng, p.reject_setting, p.dummy, p.production_time, p.stop_time, p.dandori_time, pca.id_machine, pca.id_product, pca.id_kanagata, product.name  
+    FROM production as p
+    JOIN pca ON p.id_pca = pca.id_pca
+    JOIN product ON pca.id_product = product.id_product
+    WHERE p.deleted_at is null`
+    )
 };
 
-const filterProductionByDate = async (date_start, date_end) => {
-  return await runQuery('SELECT * FROM production WHERE date >= ? AND date <= ? AND deleted_at is null', [date_start, date_end])
+const filterProductionByDate = async (id_machine, date_start, date_end) => {
+  return await runQuery(
+  `SELECT pca.id_machine, pca.id_product, product.name , DATE_FORMAT(p.date,'%Y-%m-%d %H:%i:%s') AS date, p.shift, p.ok, p.ng, p.reject_setting, p.dummy, p.production_time, p.stop_time, p.dandori_time
+  FROM production as p
+  INNER JOIN pca ON p.id_pca=pca.id_pca
+  INNER JOIN product ON pca.id_product = product.id_product
+  WHERE pca.id_machine = ? AND p.date BETWEEN ? AND DATE_ADD( ? , INTERVAL 1 DAY) AND p.deleted_at is null
+  ORDER BY p.date ASC`, [id_machine, date_start, date_end])
+  // return await runQuery('SELECT * FROM production WHERE date >= ? AND date <= ? AND deleted_at is null', [date_start, date_end])
 };
 
 const filterProductionByIdProduct = async (id_product) => {
@@ -35,9 +48,16 @@ const filterProductionByIdMachine = async (id_machine) => {
   )
 }
 
+const updateProductionById = async (id, machineData) => {
+  const { reject_setting, ng, dummy } = machineData;
+  await runQuery('UPDATE production SET reject_setting = ?, ng = ?, dummy = ? WHERE id_production = ?', [reject_setting, ng, dummy, id]);
+  return true;
+};
+
 module.exports = {
   getAllProduction,
   filterProductionByDate,
   filterProductionByIdProduct,
-  filterProductionByIdMachine
+  filterProductionByIdMachine,
+  updateProductionById
 };

@@ -1,8 +1,12 @@
 const problemModel = require('../models/problemModel.js')
 
-const handleResponse = (res, message, status = 200) => {
-  res.status(status).json({ message });
-};
+const handleResponse = (res, message, status = 200, data = null) => {
+  if (data !== null) {
+    res.status(status).json({ message, data });
+  } else {  
+    res.status(status).json({ message });
+  };
+}
 
 const handleError = (res, error) => {
   console.error('Error:', error);
@@ -32,8 +36,8 @@ const newProblem = async (req, res) => {
 const getAllProblem = async (req, res) => {
   try {
     const data = await problemModel.getAllProblem()
-    const message = data.length === 0 ? 'No problem data available, Add some data' : data
-    handleResponse(res, message)
+    const message = data.length === 0 ? 'No problem data available, Add some data' : 'Success'
+    handleResponse(res, message, 200, data)
   } catch (error) {
     handleError(res, error)
   }

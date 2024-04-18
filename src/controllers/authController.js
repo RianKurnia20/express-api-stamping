@@ -17,7 +17,7 @@ const loginUser = async (req, res) => {
     // Temukan pengguna berdasarkan nama pengguna
     const user = await userModel.findUserByEmail(email);
     if (!user[0]) {
-      return handleResponse(res, 'Authentication failed', 401)
+      return handleResponse(res, 'Authentication failed, please check email and password', 401)
     }
 
     // Verifikasi kata sandi
@@ -27,7 +27,7 @@ const loginUser = async (req, res) => {
     }
 
     // Variabel waktu expired token dalam format jam
-    const expiresIn = 60 * 60 * 1
+    const expiresIn = 60 * 60 * 2
 
     // Buat token JWT
     const token = jwt.sign({ id_user: user[0].id_user, role: user[0].roles }, process.env.JWT_SECRET, { expiresIn: expiresIn });
@@ -58,7 +58,7 @@ const validateToken = (req, res) => {
         // Jika terjadi kesalahan dalam verifikasi, tangani kondisi ketika token telah kedaluwarsa
         console.log(error.name)
         if (error.name === 'TokenExpiredError') {
-          return res.status(401).json({ session: 'expired', role: null });
+          return res.status(200).json({ session: 'expired', role: null });
         } else {
           return res.status(401).json({ message: 'Unauthorized' });
         }
