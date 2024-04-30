@@ -13,6 +13,7 @@ const statusRoutes = require('./routes/status.js');
 const problemRoutes = require('./routes/problem.js');
 const finalStatusRoutes = require('./routes/finalStatus.js');
 const pcaRoutes = require('./routes/pca.js');
+const planRoutes = require('./routes/plan.js')
 
 // import middleware
 const middlewareHandle = require('./middleware/middlewareHandle.js');
@@ -47,6 +48,9 @@ app.use('/status', statusRoutes) // status endpoint ✔
 app.use('/problem', problemRoutes) // problem endpoint ✔
 app.use('/final_status', finalStatusRoutes) // final status endpoint ✔
 app.use('/pca', pcaRoutes) // pca endpoint ✔
+app.use('/plan', planRoutes)
+
+
 // Run service REST API
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)

@@ -15,7 +15,9 @@ const getAllPca = async () => {
   SELECT pca.id_pca, pca.id_machine, pca.id_product, pca.id_kanagata, pca.speed, pca.created_at, pca.updated_at, product.name as name
   FROM pca
   JOIN product ON pca.id_product = product.id_product
-  WHERE pca.deleted_at is null`)
+  WHERE pca.deleted_at is null
+  ORDER BY pca.id_machine`
+  )
 }
 
 const updatePcaById = async (id_pca, pcaData) => {

@@ -66,8 +66,7 @@ const getAllProduction = (req, res) => {
     });
 };
 
-
-const getProductionByDate = async (req, res) => {
+const getTrendProductionByDate = async (req, res) => {
   const { id_machine, date_start, date_end } = req.query;
   try {
     const data = await productionModel.filterProductionByDate(id_machine, date_start, date_end)
@@ -81,6 +80,40 @@ const getProductionByDate = async (req, res) => {
     handleError(res, error)
   }
 };
+
+const getProductionByDate = async (req, res) => {
+  const { id_machine, date_start, date_end } = req.query;
+  try {
+    const data = await productionModel.filterProductionByDate(id_machine, date_start, date_end)
+    const message = data.length === 0 ? 'No data production' : 'Success'
+
+    return handleResponse(res, message, 200, data)
+  } catch (error) {
+    handleError(res, error)
+  }
+};
+
+const getPpmByDate = async(req,res) => {
+  const { id_machine, date_start, date_end } = req.query;
+  let message = 'Success'
+  try {
+    const data = await productionModel.ppmProductionByDate(id_machine, date_start, date_end)
+    if(data[0].total_ok === null){
+      data[0].total_ok = 0
+      data[0].total_rip = 0
+      data[0].total_rs = 0
+      data[0].total_dummy = 0
+      data[0].rip_ppm = 0
+      data[0].rs_ppm = 0
+      data[0].dummy_ppm = 0
+      data[0].total_stoptime = 0
+      message = 'No data production';
+    }
+    return handleResponse(res, message, 200, data)
+  } catch (error) {
+    handleError(res, error)    
+  }
+}
 
 const getProductionByIdProduct = async (req, res) => {
   const { id_product } = req.query;
@@ -110,6 +143,28 @@ const getProductionByIdMachine = async (req, res) => {
   }
 }
 
+const getProductionByMachineMonth = async (req, res) => {
+  const  { id_machine, year, month } = req.query
+  try {
+    const data = await productionModel.productionByMachineMonth(id_machine, year, month)
+    const message = data.length === 0 ? 'No data production' : 'Success'
+    return handleResponse(res, message, 200, data)
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
+const getTotalProductionAllMachineByMonth = async (req, res) => {
+  const {id_machine, year, month } = req.query
+  try {
+    const data = await productionModel.totalProductionByMonth(id_machine, year, month);
+    const message = data.length === 0 ? 'No data production' : 'Success'
+    return handleResponse(res, message, 200, data)
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
 const updateProduction = async (req, res) => {
   try {
     const { reject_setting, ng } = req.body;
@@ -128,5 +183,9 @@ module.exports = {
   getProductionByDate,
   getProductionByIdProduct,
   getProductionByIdMachine,
-  updateProduction
+  updateProduction,
+  getPpmByDate,
+  getTrendProductionByDate,
+  getProductionByMachineMonth, 
+  getTotalProductionAllMachineByMonth
 };
