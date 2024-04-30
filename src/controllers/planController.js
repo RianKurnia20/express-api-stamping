@@ -28,16 +28,48 @@ const newPlan = async (req, res) => {
 };
 
 const getAllPlan = async(req, res) => {
+  const { id_plan } = req.query
+  let data, message
   try {
-    const data = await planModel.getAllPlan()
-    const message = data.length === 0 ? 'No production plan available' : 'Success'
+    if(id_plan === null ){
+      data = await planModel.getAllPlan()
+    }else{
+      data = await planModel.getAllPlan(id_plan)
+    }
+    message = data.length === 0 ? 'No production plan available' : 'Success'
     handleResponse(res, message, 200, data)
   } catch (error) {
     handleError(res, error)
   }
 }
 
+const updatedPlan = async (req, res) => {
+  try {
+    const { id_pca, qty, shift, start, end } = req.body
+    if(!id_pca || !qty || !shift || !start || !end){
+      return handleResponse(res, 'All fields are required', 400)
+    }
+    await planModel.updatePlanById(req.params.id, req.body)
+    handleResponse(res, 'Update production plan successfully')
+  } catch (error) {
+    handleError(res, error,)
+  }
+}
+
+const deletePlan = async(req, res) => {
+  try {
+    const deleted = await planModel.deletePlanById(req.params.id)
+    const message = deleted ? 'Production plan data deleted' : 'Production plan data not found'
+    handleResponse(res, message)
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
+
 module.exports = {
   newPlan,
-  getAllPlan
+  getAllPlan,
+  updatedPlan,
+  deletePlan
 }

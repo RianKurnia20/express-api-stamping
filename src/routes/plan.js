@@ -4,5 +4,7 @@ const planController = require('../controllers/planController')
 
 router.post('/', planController.newPlan)
 router.get('/',  planController.getAllPlan)
+router.patch('/:id', planController.updatedPlan)
+router.delete('/:id', planController.deletePlan)
 
 module.exports = router
