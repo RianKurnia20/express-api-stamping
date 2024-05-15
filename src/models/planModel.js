@@ -12,20 +12,29 @@ const addPlan = async (id_pca, qty, shift, date_start, date_end) => {
   return true;
 };
 
-const getAllPlan = async (id_plan = null) => {
-  if(id_plan === null ){
-    return await runQuery(`
-    SELECT plan.id_plan, plan.qty, plan.shift, plan.start, plan.end, plan.time_plan, pro.name, pca.id_kanagata, pca.id_machine
-    FROM plan
-    JOIN pca ON pca.id_pca = plan.id_pca
-    JOIN product as pro ON pro.id_product = pca.id_product
-    WHERE plan.deleted_at is null
-    ORDER BY plan.start asc
-    `)
-  }else{
-    return await runQuery(`select * from plan where id_plan = ?`,[id_plan]);
+const getAllPlan = async (id_plan = null, id_machine = null) => {
+  if (!id_plan) {
+    let query = `
+      SELECT plan.id_plan, plan.qty, plan.shift, plan.start, plan.end, plan.time_plan, pro.name, pca.id_kanagata, pca.id_machine
+      FROM plan
+      JOIN pca ON pca.id_pca = plan.id_pca
+      JOIN product as pro ON pro.id_product = pca.id_product
+      WHERE 1=1
+      AND plan.deleted_at is null
+    `;
+    let params = [];
+    // Jika id_machine bukan 'ALL', tambahkan klausa WHERE
+    if (id_machine !== 'ALL') {
+      query += ` AND pca.id_machine = ?`;
+      params.push(id_machine);
+    }
+    query += ` ORDER BY plan.start ASC`;
+    return await runQuery(query, params);
+  } else {
+    return await runQuery(`SELECT * FROM plan WHERE id_plan = ?`, [id_plan]);
   }
 }
+
 
 const updatePlanById = async (id_plan, planData) => {
   const { id_pca, qty, shift, start, end } = planData

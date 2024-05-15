@@ -94,6 +94,18 @@ const updateProductionById = async (id, machineData) => {
   return true;
 };
 
+const filterProductionFiscalByYearMonth= async (year) => {
+  return await runQuery(
+    `SELECT year(date) as year, month(date) as month, sum(ok) as ok, sum(ng) as ng, sum(reject_setting) as reject_setting, sum(dummy) as dummy, sum(production_time) as production_time, sum(dandori_time) as dandori_time, sum(stop_time) as stop_time 
+    FROM production 
+    WHERE year(date) = ? 
+    AND month(date) >= 4 
+    OR year(date) = ? + 1 
+    AND month(date) < 4 
+    AND deleted_at is null 
+    GROUP BY YEAR(date), MONTH(date);`, [year, year])
+}
+
 module.exports = {
   getAllProduction,
   filterProductionByDate,
@@ -102,5 +114,6 @@ module.exports = {
   updateProductionById,
   ppmProductionByDate,
   productionByMachineMonth,
-  totalProductionByMonth
+  totalProductionByMonth,
+  filterProductionFiscalByYearMonth
 };

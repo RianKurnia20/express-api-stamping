@@ -15,7 +15,8 @@ const handleError = (res, error) => {
   res.status(500).json({ message: 'Server Error' });
 };
 
-// fungsi untuk format struktur data production
+// ==================== FUNCTION FOR DATA PROCESS ==================
+// fungsi untuk format struktur data production daily weekly
 const processProduction = (dateRange, queryResult) => {
     const initializeShiftData = () => ({
         ok: Array(dateRange.length).fill(0),
@@ -54,6 +55,36 @@ const processProduction = (dateRange, queryResult) => {
 
     return data;
 };
+
+// fungsi untuk format struktur data production yearly
+const groupData = (data) => {
+    const result = {
+        year_month: [],
+        ok: [],
+        ng: [],
+        reject_setting: [],
+        dummy: [],
+        production_time: [],
+        dandori_time: [],
+        stop_time: []
+    };
+
+    data.forEach(item => {
+        const year_month = `${item.year}-${item.month}`;
+        result.year_month.push(year_month);
+        result.ok.push(item.ok);
+        result.ng.push(item.ng);
+        result.reject_setting.push(item.reject_setting);
+        result.dummy.push(item.dummy);
+        result.production_time.push(item.production_time);
+        result.dandori_time.push(item.dandori_time);
+        result.stop_time.push(item.stop_time);
+    });
+
+    return result;
+}
+
+// =================================================================
 
 const getAllProduction = (req, res) => {
   productionModel.getAllProduction()
@@ -165,6 +196,18 @@ const getTotalProductionAllMachineByMonth = async (req, res) => {
   }
 }
 
+const getFiscalProductionByYearMonth = async(req, res) => {
+  const {year} = req.query
+  try {
+    const data = await productionModel.filterProductionFiscalByYearMonth(year)
+    const message = data.length === 0 ? 'No data production' : 'Success'
+    const formattedData = groupData(data)
+    return handleResponse(res, message, 200, formattedData)
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
 const updateProduction = async (req, res) => {
   try {
     const { reject_setting, ng } = req.body;
@@ -178,6 +221,8 @@ const updateProduction = async (req, res) => {
   }
 };
 
+
+
 module.exports = {
   getAllProduction,
   getProductionByDate,
@@ -187,5 +232,6 @@ module.exports = {
   getPpmByDate,
   getTrendProductionByDate,
   getProductionByMachineMonth, 
-  getTotalProductionAllMachineByMonth
+  getTotalProductionAllMachineByMonth,
+  getFiscalProductionByYearMonth
 };

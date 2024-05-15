@@ -28,11 +28,11 @@ const newPlan = async (req, res) => {
 };
 
 const getAllPlan = async(req, res) => {
-  const { id_plan } = req.query
+  const { id_plan, id_machine } = req.query
   let data, message
   try {
-    if(id_plan === null ){
-      data = await planModel.getAllPlan()
+    if( !id_plan ){
+      data = await planModel.getAllPlan(null, id_machine)
     }else{
       data = await planModel.getAllPlan(id_plan)
     }
