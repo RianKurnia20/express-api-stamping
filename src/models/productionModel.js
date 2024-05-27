@@ -77,14 +77,19 @@ const filterProductionByIdProduct = async (id_product) => {
   )
 }
 
-const filterProductionByIdMachine = async (id_machine) => {
+const filterProductionByIdMachineYesterday = async (id_machine, shift) => {
   return await runQuery(
-    `SELECT a.date, a.ok, a.ng, a.reject_setting, a.stop_time, a.production_time, a.shift, b.id_machine, b.id_product
+    `SELECT a.ok, a.ng, a.reject_setting, a.stop_time, b.id_product, a.dummy, c.name as product_name, a.dandori_time
     FROM production as a
     JOIN pca as b
     ON a.id_pca = b.id_pca
-    WHERE b.id_machine = ? AND a.deleted_at is null`,
-    [id_machine]
+    JOIN product as c
+    ON b.id_product = c.id_product
+    WHERE b.id_machine = ? 
+    AND a.deleted_at is null
+    AND DATE(a.date) = CURDATE() - INTERVAL 1 DAY
+    AND a.shift = ?`,
+    [id_machine, shift]
   )
 }
 
@@ -94,23 +99,42 @@ const updateProductionById = async (id, machineData) => {
   return true;
 };
 
-const filterProductionFiscalByYearMonth= async (year) => {
+const filterProductionFiscalByYearMonth= async (year, id_machine) => {
   return await runQuery(
-    `SELECT year(date) as year, month(date) as month, sum(ok) as ok, sum(ng) as ng, sum(reject_setting) as reject_setting, sum(dummy) as dummy, sum(production_time) as production_time, sum(dandori_time) as dandori_time, sum(stop_time) as stop_time 
-    FROM production 
-    WHERE year(date) = ? 
-    AND month(date) >= 4 
-    OR year(date) = ? + 1 
-    AND month(date) < 4 
-    AND deleted_at is null 
-    GROUP BY YEAR(date), MONTH(date);`, [year, year])
+    `SELECT 
+    YEAR(p.date) AS year, 
+    MONTH(p.date) AS month, 
+    SUM(p.ok) AS ok, 
+    SUM(p.ng) AS ng, 
+    SUM(p.reject_setting) AS reject_setting, 
+    SUM(p.dummy) AS dummy, 
+    SUM(p.production_time) AS production_time, 
+    SUM(p.dandori_time) AS dandori_time, 
+    SUM(p.stop_time) AS stop_time 
+    FROM 
+        production AS p
+    JOIN
+        pca ON p.id_pca = pca.id_pca
+    WHERE 
+      (
+        (YEAR(p.date) = ? AND MONTH(p.date) >= 4)
+        OR 
+        (YEAR(p.date) = ? + 1 AND MONTH(p.date) < 4)
+      ) 
+      AND 
+      pca.id_machine = ? 
+      AND 
+      p.deleted_at IS NULL 
+    GROUP BY
+        YEAR(p.date), 
+        MONTH(p.date);`, [year, year, id_machine])
 }
 
 module.exports = {
   getAllProduction,
   filterProductionByDate,
   filterProductionByIdProduct,
-  filterProductionByIdMachine,
+  filterProductionByIdMachineYesterday,
   updateProductionById,
   ppmProductionByDate,
   productionByMachineMonth,

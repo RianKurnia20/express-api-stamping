@@ -10,7 +10,7 @@ router.get('/date/ppm', productionController.getPpmByDate);
 router.get('/monthly', productionController.getProductionByMachineMonth);
 router.get('/monthly/total', productionController.getTotalProductionAllMachineByMonth);
 router.get('/product', productionController.getProductionByIdProduct);
-router.get('/machine', productionController.getProductionByIdMachine);
+router.get('/machine', productionController.getProductionByIdMachineYesterday);
 router.get('/fiscal', productionController.getFiscalProductionByYearMonth)
 
 router.patch('/:id', productionController.updateProduction);

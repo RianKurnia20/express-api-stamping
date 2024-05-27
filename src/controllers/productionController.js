@@ -57,29 +57,64 @@ const processProduction = (dateRange, queryResult) => {
 };
 
 // fungsi untuk format struktur data production yearly
-const groupData = (data) => {
-    const result = {
-        year_month: [],
-        ok: [],
-        ng: [],
-        reject_setting: [],
-        dummy: [],
-        production_time: [],
-        dandori_time: [],
-        stop_time: []
-    };
+const groupData = (year, data) => {
 
-    data.forEach(item => {
-        const year_month = `${item.year}-${item.month}`;
-        result.year_month.push(year_month);
-        result.ok.push(item.ok);
-        result.ng.push(item.ng);
-        result.reject_setting.push(item.reject_setting);
-        result.dummy.push(item.dummy);
-        result.production_time.push(item.production_time);
-        result.dandori_time.push(item.dandori_time);
-        result.stop_time.push(item.stop_time);
-    });
+  const generateFiscalYearMonths = (year) => {
+    const fiscalYearMonths = [];
+    for (let month = 4; month <= 12; month++) {
+        fiscalYearMonths.push(`${year}-${month}`);
+    }
+    for (let month = 1; month <= 3; month++) {
+        fiscalYearMonths.push(parseInt(year)+1 +'-'+month);
+    }
+    return fiscalYearMonths;
+  }
+
+  const result = {
+      year_month: generateFiscalYearMonths(year),
+      ok: [],
+      ng: [],
+      reject_setting: [],
+      dummy: [],
+      production_time: [],
+      dandori_time: [],
+      stop_time: []
+  };
+
+  const defaultData = {
+    ok: 0,
+    ng: 0,
+    reject_setting: 0,
+    dummy: 0,
+    production_time: 0,
+    dandori_time: 0,
+    stop_time: 0
+};
+
+  result.year_month.forEach(ym => {
+    const [year, month] = ym.split('-').map(Number);
+    const item = data.find(d => d.year === year && d.month === month) || defaultData;
+
+    result.ok.push(Number(item.ok));
+    result.ng.push(Number(item.ng));
+    result.reject_setting.push(Number(item.reject_setting));
+    result.dummy.push(Number(item.dummy));
+    result.production_time.push(Number(item.production_time));
+    result.dandori_time.push(Number(item.dandori_time));
+    result.stop_time.push(Number(item.stop_time));
+  });
+
+    // data.forEach(item => {
+    //     const year_month = `${item.year}-${item.month}`;
+    //     result.year_month.push(year_month);
+    //     result.ok.push(item.ok);
+    //     result.ng.push(item.ng);
+    //     result.reject_setting.push(item.reject_setting);
+    //     result.dummy.push(item.dummy);
+    //     result.production_time.push(item.production_time);
+    //     result.dandori_time.push(item.dandori_time);
+    //     result.stop_time.push(item.stop_time);
+    // });
 
     return result;
 }
@@ -160,19 +195,34 @@ const getProductionByIdProduct = async (req, res) => {
   }
 }
 
-const getProductionByIdMachine = async (req, res) => {
-  const { id_machine } = req.query;
+const getProductionByIdMachineYesterday = async (req, res) => {
+  const { id_machine, shift } = req.query;
   try {
-    if (!id_machine) {
-      return handleResponse(res, 'ID machine required')
+    if (!id_machine || !shift) {
+      return handleResponse(res, 'Query parameter required')
     }
-    const data = await productionModel.filterProductionByIdMachine(id_machine)
-    const message = data.length === 0 ? 'No data production' : 'Success'
-    return handleResponse(res, message, 200, data)
+
+    const data = await productionModel.filterProductionByIdMachineYesterday(id_machine, shift)
+    const template = {
+      ok: 0,
+      ng: 0,
+      reject_setting: 0,
+      stop_time: 0,
+      id_product: null,
+      dummy: 0,
+      product_name: null,
+      dandori_time: 0
+    }
+
+    const productionData = data.length === 0 ? template : { ...template, ...data[0] };
+    const message = data.length === 0 ? 'No data production' : 'Success';
+    
+    return handleResponse(res, message, 200, productionData)
   } catch (error) {
     handleError(res, error)
   }
 }
+
 
 const getProductionByMachineMonth = async (req, res) => {
   const  { id_machine, year, month } = req.query
@@ -197,11 +247,11 @@ const getTotalProductionAllMachineByMonth = async (req, res) => {
 }
 
 const getFiscalProductionByYearMonth = async(req, res) => {
-  const {year} = req.query
+  const {year, id_machine} = req.query
   try {
-    const data = await productionModel.filterProductionFiscalByYearMonth(year)
+    const data = await productionModel.filterProductionFiscalByYearMonth(year, id_machine)
     const message = data.length === 0 ? 'No data production' : 'Success'
-    const formattedData = groupData(data)
+    const formattedData = groupData(year,data)
     return handleResponse(res, message, 200, formattedData)
   } catch (error) {
     handleError(res, error)
@@ -227,7 +277,7 @@ module.exports = {
   getAllProduction,
   getProductionByDate,
   getProductionByIdProduct,
-  getProductionByIdMachine,
+  getProductionByIdMachineYesterday,
   updateProduction,
   getPpmByDate,
   getTrendProductionByDate,
