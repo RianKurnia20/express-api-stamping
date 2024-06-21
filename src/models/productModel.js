@@ -5,14 +5,14 @@ const runQuery = async (query, params = []) => {
   return result;
 };
 
-const addProduct = async (id, name) => {
-  await runQuery(`INSERT INTO product (id_product, name) VALUES (?, ?)`, [id, name]);
+const addProduct = async (id, name, price) => {
+  await runQuery(`INSERT INTO product (id_product, name, price) VALUES (?, ?, ?)`, [id, name, price]);
   return true; // Jika berhasil menyimpan pengguna
 };
 
 const updateProductById = async (id, productData) => {
-  const { id_product, name } = productData;
-  await runQuery(`UPDATE product SET id_product = ?, name = ? WHERE id_product = ?`, [id_product, name, id]);
+  const { id_product, name, price } = productData;
+  await runQuery(`UPDATE product SET id_product = ?, name = ?, price = ? WHERE id_product = ?`, [id_product, name, price, id]);
   return true
 }
 

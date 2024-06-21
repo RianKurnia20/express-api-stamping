@@ -5,14 +5,14 @@ const runQuery = async (query, params = []) => {
   return result;
 };
 
-const addKanagata = async (id, actual_shot, limit_shot) => {
-  await runQuery(`INSERT INTO kanagata (id_kanagata, actual_shot, limit_shot) VALUES (?, ?, ?)`, [id, actual_shot, limit_shot]);
+const addKanagata = async (id, actual_shot, limit_shot, cavity) => {
+  await runQuery(`INSERT INTO kanagata (id_kanagata, actual_shot, limit_shot, cavity) VALUES (?, ?, ?, ?)`, [id, actual_shot, limit_shot, cavity]);
   return true
 };
 
 const updateKanagataById = async (id, kanagataData) => {
-    const { id_kanagata, actual_shot, limit_shot } = kanagataData;
-    await dbPool.query(`UPDATE kanagata SET id_kanagata = ?, actual_shot = ?, limit_shot = ? WHERE id_kanagata = ?`, [id_kanagata, actual_shot, limit_shot, id]);
+    const { id_kanagata, actual_shot, limit_shot, cavity } = kanagataData;
+    await dbPool.query(`UPDATE kanagata SET id_kanagata = ?, actual_shot = ?, limit_shot = ?, cavity = ? WHERE id_kanagata = ?`, [id_kanagata, actual_shot, limit_shot, cavity, id]);
     return true
 }
 

@@ -14,11 +14,12 @@ const handleError = (res, error) => {
 };
 
 const newKanagata = async (req, res) => {
-  const { id_kanagata, actual_shot, limit_shot } = req.body;
+  const { id_kanagata, actual_shot, limit_shot, cavity } = req.body;
   const actualShot = actual_shot || 0
   const limitShot = limit_shot || 0
+  const cavityKanagata = cavity || 0
   try {
-    if(!id_kanagata || actualShot === undefined || limitShot === undefined) {
+    if(!id_kanagata || actualShot === undefined || limitShot === undefined || cavityKanagata === 0) {
       return handleResponse(res, 'All fields are required', 400)
     }
 
@@ -27,7 +28,7 @@ const newKanagata = async (req, res) => {
       return handleResponse(res, 'Kanagata already exists', 400)
     }
 
-    await kanagataModel.addKanagata(id_kanagata, actualShot, limitShot)
+    await kanagataModel.addKanagata(id_kanagata, actualShot, limitShot, cavityKanagata)
     handleResponse(res, 'Create new kanagata data successfully')
   } catch (error) {
     handleError(res,error)
@@ -37,10 +38,10 @@ const newKanagata = async (req, res) => {
 const updateKanagata = async (req, res) => {
   try {
     const id = req.params.id;
-    const { id_kanagata, actual_shot, limit_shot } = req.body;
+    const { id_kanagata, actual_shot, limit_shot, cavity } = req.body;
 
     // Validasi key dan value pada request body
-    if (!id_kanagata || actual_shot === undefined || limit_shot === undefined ) {
+    if (!id_kanagata || actual_shot === undefined || limit_shot === undefined || cavity === undefined ) {
       return handleResponse(res, 'All fields are required', 400)
     }
     // Validasi kanagata id yang ingin di update apakah ada pada table

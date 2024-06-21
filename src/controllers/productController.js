@@ -15,7 +15,7 @@ const handleError = (res, error) => {
 };
 
 const newProduct= async (req, res) => {
-  const { id_product , name } = req.body;
+  const { id_product , name, price } = req.body;
   try {
     if( !id_product || !name ){
       return handleResponse(res, 'All fields are required', 400)
@@ -26,7 +26,7 @@ const newProduct= async (req, res) => {
       return handleResponse(res, 'Product already exists', 400)
     }
 
-    await productModel.addProduct(id_product, name)
+    await productModel.addProduct(id_product, name, price)
     handleResponse(res, 'Create new product data successfully')
   } catch (error) {
     handleError(res, error)
@@ -36,7 +36,7 @@ const newProduct= async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const id = req.params.id;
-    const { id_product, name } = req.body;
+    const { id_product, name, price } = req.body;
 
     if (!name) {
       return handleResponse(res, 'ID product and name are required fields', 400);

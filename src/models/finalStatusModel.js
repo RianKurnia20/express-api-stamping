@@ -7,14 +7,45 @@ const runQuery = async (query, params = []) => {
 
 const getAllFinalStatus = async () => {
   return await runQuery(
-    `SELECT id_final_status, id_status, id_problem, id_machine, DATE_FORMAT(start, '%Y-%m-%d %H:%i:%s') as start, DATE_FORMAT(end, '%Y-%m-%d %H:%i:%s') as end FROM final_status`
-    )
+  `SELECT 
+    fs.id_final_status, 
+    s.name AS status, 
+    p.name AS stop_condition, 
+    fs.id_machine, 
+    ROUND(fs.duration / 60, 1) AS duration, 
+    DATE_FORMAT(fs.start, '%Y-%m-%d %H:%i:%s') AS start, 
+    DATE_FORMAT(fs.end, '%Y-%m-%d %H:%i:%s') AS end 
+  FROM 
+      final_status AS fs
+  JOIN 
+      status AS s ON fs.id_status = s.id_status
+  JOIN 
+      problem AS p ON fs.id_problem = p.id_problem;`
+  ) 
 };
 
-const filterFinalStatusByDateRange = async (date_start, date_end) => {
+const FinalStatusByDateRangeAndMachine = async (date_start, date_end, machine) => {
   return await runQuery(
-    `SELECT id_final_status, id_status, id_problem, id_machine, DATE_FORMAT(start, '%Y-%m-%d %H:%i:%s') as start, DATE_FORMAT(end, '%Y-%m-%d %H:%i:%s') as end FROM final_status where start between ? and ?`,
-    [date_start, date_end]
+  `SELECT 
+    fs.id_final_status, 
+    s.name AS status, 
+    p.name AS stop_condition, 
+    fs.id_machine, 
+    ROUND(fs.duration / 60, 1) AS duration, 
+    DATE_FORMAT(fs.start, '%Y-%m-%d %H:%i:%s') AS start, 
+    DATE_FORMAT(fs.end, '%Y-%m-%d %H:%i:%s') AS end 
+  FROM 
+      final_status AS fs
+  JOIN 
+      status AS s ON fs.id_status = s.id_status
+  JOIN 
+      problem AS p ON fs.id_problem = p.id_problem
+  WHERE
+    DATE(fs.start) between ? AND ?
+  AND 
+    fs.id_machine = ?
+  ORDER BY fs.start desc`,
+    [date_start, date_end, machine]
   )
 ;
 }
@@ -31,6 +62,6 @@ const countFinalStatusByMachine = async (date_start, date_end, machine) => {
 
 module.exports = {
   getAllFinalStatus,
-  filterFinalStatusByDateRange,
+  FinalStatusByDateRangeAndMachine,
   countFinalStatusByMachine
 }

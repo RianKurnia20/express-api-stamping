@@ -27,8 +27,7 @@ const loginUser = async (req, res) => {
     }
 
     // Variabel waktu expired token dalam format jam
-    const expiresIn = 60 * 60 * 2
-
+    const expiresIn = 60 * 60 * 4
     // Buat token JWT
     const token = jwt.sign({ id_user: user[0].id_user, role: user[0].roles }, process.env.JWT_SECRET, { expiresIn: expiresIn });
     const role = user[0].role
@@ -53,7 +52,7 @@ const validateToken = (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         // Jika pengguna tidak memiliki peran admin, kembalikan respon error
-        return res.status(200).json({ session: 'active', role: decoded.role });
+        return res.status(200).json({ session: 'active', role: decoded.role, name: decoded.username });
     } catch (error) {
         // Jika terjadi kesalahan dalam verifikasi, tangani kondisi ketika token telah kedaluwarsa
         console.log(error.name)

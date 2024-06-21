@@ -4,6 +4,7 @@ const productionController = require('../controllers/productionController');
 
 // GET - ALL PRODUCTIONS
 router.get('/', productionController.getAllProduction);
+router.get('/filter', productionController.getAllProductionFilterMachineMonth);
 router.get('/date', productionController.getProductionByDate);
 router.get('/date/trend', productionController.getTrendProductionByDate);
 router.get('/date/ppm', productionController.getPpmByDate);

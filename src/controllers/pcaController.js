@@ -14,12 +14,12 @@ const handleError = (res, error) => {
 };
 
 const newPca = async (req, res) => {
-  const { id_machine, id_product, id_kanagata, speed, cavity } = req.body;
+  const { id_machine, id_product, id_kanagata, speed } = req.body;
   try {
-    if (!id_machine || !id_product || !id_kanagata || !cavity ) {
+    if (!id_machine || !id_product || !id_kanagata ) {
       return handleResponse(res, 'All fields are required', 400)
     }
-    await pcaModel.addPca(id_machine, id_product, id_kanagata, speed, cavity);
+    await pcaModel.addPca(id_machine, id_product, id_kanagata, speed);
     handleResponse(res, 'Create pca data successfully');
   } catch (error) {
     handleError(res, error);

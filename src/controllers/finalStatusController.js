@@ -23,13 +23,13 @@ const getAllFinalStatus = async (req, res) => {
   }
 }
 
-const getFinalStatusWithDateRange = async (req, res) => {
-  const { date_start, date_end } = req.query
+const getFinalStatusWithDateRangeAndMachine = async (req, res) => {
+  const { date_start, date_end, machine } = req.query
   try {
-    if(!date_start || !date_end){
-      return handleResponse(res,'Both start date and end date are required', 400)
+    if(!date_start || !date_end || !machine){
+      return handleResponse(res,'start date, end date, id machine are required', 400)
     }
-    const data = await finalStatusModel.filterFinalStatusByDateRange(req.query.date_start, req.query.date_end)
+    const data = await finalStatusModel.FinalStatusByDateRangeAndMachine(date_start, date_end, machine)
     const message = data.length === 0 ? 'No Data' : 'Success'
     handleResponse(res, message, 200, data)
   } catch (error) {
@@ -53,6 +53,6 @@ const getCountFinalStatusByMachine = async (req, res) => {
 
 module.exports = {
   getAllFinalStatus,
-  getFinalStatusWithDateRange,
+  getFinalStatusWithDateRangeAndMachine,
   getCountFinalStatusByMachine
 }

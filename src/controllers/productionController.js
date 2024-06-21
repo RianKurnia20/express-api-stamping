@@ -132,6 +132,25 @@ const getAllProduction = (req, res) => {
     });
 };
 
+const getAllProductionFilterMachineMonth = async (req, res) => {
+  const { id_machine, year, month } = req.query
+  try {
+    const data = await productionModel.getAllProductionFilterMachineMonth(id_machine, year, month)
+    const message = data.length === 0 ? 'No production data available' : 'Success';
+    return handleResponse(res, message, 200, data)
+  } catch (error) {
+    handleError(res, error)
+  }
+  // productionModel.getAllProductionFilterMachineMonth()
+  //   .then(production => {
+  //     const data = production.length === 0 ? 'No production data available' : production;
+  //     handleResponse(res, 'Success', 200, data);
+  //   })
+  //   .catch(error => {
+  //     handleError(res, error);
+  //   });
+};
+
 const getTrendProductionByDate = async (req, res) => {
   const { id_machine, date_start, date_end } = req.query;
   try {
@@ -164,16 +183,10 @@ const getPpmByDate = async(req,res) => {
   let message = 'Success'
   try {
     const data = await productionModel.ppmProductionByDate(id_machine, date_start, date_end)
-    if(data[0].total_ok === null){
-      data[0].total_ok = 0
-      data[0].total_rip = 0
-      data[0].total_rs = 0
-      data[0].total_dummy = 0
-      data[0].rip_ppm = 0
-      data[0].rs_ppm = 0
-      data[0].dummy_ppm = 0
-      data[0].total_stoptime = 0
-      message = 'No data production';
+    for (let prop in data[0]) {
+      if (data[0][prop] === null) {
+          data[0][prop] = '0'
+      }
     }
     return handleResponse(res, message, 200, data)
   } catch (error) {
@@ -275,6 +288,7 @@ const updateProduction = async (req, res) => {
 
 module.exports = {
   getAllProduction,
+  getAllProductionFilterMachineMonth,
   getProductionByDate,
   getProductionByIdProduct,
   getProductionByIdMachineYesterday,
