@@ -31,6 +31,10 @@ const FinalStatusByDateRangeAndMachine = async (date_start, date_end, machine) =
     s.name AS status, 
     p.name AS stop_condition, 
     fs.id_machine, 
+    CASE 
+        WHEN fs.power = 0 THEN 'Off' 
+        WHEN fs.power = 1 THEN 'On' 
+    END AS power,
     ROUND(fs.duration / 60, 1) AS duration, 
     DATE_FORMAT(fs.start, '%Y-%m-%d %H:%i:%s') AS start, 
     DATE_FORMAT(fs.end, '%Y-%m-%d %H:%i:%s') AS end 

@@ -27,18 +27,29 @@ const loginUser = async (req, res) => {
     }
 
     // Variabel waktu expired token dalam format jam
-    const expiresIn = 60 * 60 * 4
+    // const expiresIn = 86400
     // Buat token JWT
-    const token = jwt.sign({ id_user: user[0].id_user, role: user[0].roles }, process.env.JWT_SECRET, { expiresIn: expiresIn });
+    const token = jwt.sign({ id_user: user[0].id_user, role: user[0].roles }, process.env.JWT_SECRET, { expiresIn: '2h' });
     const role = user[0].role
-    res.json({ token, role });
 
+    // coba taruh di cookie http respons
+    // res.cookie('jwt_token', token, {
+    //   httpOnly: true,
+    //   sameSite: 'Lax',
+    //   secure: false,
+    //   maxAge: 3600000 
+    // });
+
+    // console.log('Token sent in cookie' ,token)
+    // res.status(200).send({ message: 'User login successfully' });
+
+    res.json({ token, role });
   } catch (error) {
     handleError(res, error);
   }
 }
 
-const validateToken = (req, res) => {
+const validateToken = async (req, res) => {
     // Mendapatkan token dari header Authorization
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];

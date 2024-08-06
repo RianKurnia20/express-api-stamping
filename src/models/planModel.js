@@ -6,8 +6,8 @@ const runQuery = async (query, params = []) => {
 };
 
 
-const addPlan = async (id_pca, qty, shift, date_start, date_end) => {
-  const time_plan = (new Date(date_end) - new Date(date_start)) / (1000 * 60);
+const addPlan = async (id_pca, qty, shift, date_start, date_end, time_plan) => {
+  // const time_plan = (new Date(date_end) - new Date(date_start)) / (1000 * 60);
   await runQuery('INSERT INTO plan (id_pca, qty, shift, start, end, time_plan) VALUES (?, ?, ?, ?, ?, ?)', [id_pca, qty, shift, date_start, date_end, time_plan]);
   return true;
 };
@@ -35,10 +35,19 @@ const getAllPlan = async (id_plan = null, id_machine = null) => {
   }
 }
 
+const getPlanById = async (id_plan = null) => {
+  return await runQuery(
+    `SELECT p.id_production FROM plan
+    JOIN production as p on plan.id_plan = p.id_plan
+    WHERE plan.id_plan = ?`
+    , [id_plan]
+    );
+}
+
 
 const updatePlanById = async (id_plan, planData) => {
-  const { id_pca, qty, shift, start, end } = planData
-  const time_plan = (new Date(end) - new Date(start)) / (1000 * 60);
+  const { id_pca, qty, shift, start, end, time_plan } = planData
+  // const time_plan = (new Date(end) - new Date(start)) / (1000 * 60);
   await runQuery(
     'UPDATE plan SET id_pca = ?, qty = ?, shift = ?, start = ?, end = ?, time_plan = ? WHERE id_plan = ?',
     [id_pca, qty, shift, start, end, time_plan, id_plan]
@@ -53,6 +62,7 @@ const deletePlanById = async(id_plan) => {
 }
 
 module.exports = {
+  getPlanById,
   getAllPlan,
   addPlan,
   updatePlanById,

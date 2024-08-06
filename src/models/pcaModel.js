@@ -6,9 +6,10 @@ const runQuery = async (query, params = []) => {
 };
 
 const addPca = async (id_machine, id_product, id_kanagata, speed) => {
-  await runQuery('INSERT INTO pca (id_machine, id_product, id_kanagata, speed) VALUES (?, ?, ?, ?, ?)', [id_machine, id_product, id_kanagata, speed]);
+  await runQuery('INSERT INTO pca (id_machine, id_product, id_kanagata, speed) VALUES (?, ?, ?, ?)', [id_machine, id_product, id_kanagata, speed]);
   return true;
 };
+
 
 const getAllPca = async () => {
   return await runQuery(`
@@ -43,10 +44,18 @@ const getPcaByIdProduct = async (id_product) => {
   WHERE product.id_product = ?`, [id_product])
 }
 
+const getPcaByIdPca = async (id_pca) => {
+  return await runQuery(`
+  SELECT pca.id_machine, pca.id_kanagata, pca.speed, kanagata.cavity from pca
+  join kanagata on pca.id_kanagata = kanagata.id_kanagata
+  where pca.id_pca = ?`, [id_pca])
+}
+
 module.exports = {
   getAllPca,
   updatePcaById,
   deletePcaById,
   addPca,
-  getPcaByIdProduct
+  getPcaByIdProduct,
+  getPcaByIdPca
 }

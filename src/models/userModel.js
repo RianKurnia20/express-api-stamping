@@ -12,12 +12,11 @@ const createUser = async (username, email, hashedPassword) => {
   return true;
 };
 
-const updateUserById = async (userId, userData) => {
-  const { username, email, password } = userData;
+const updateUserById = async (userId, password) => {
   const hashedPassword = await bcrypt.hash(password, 10); // Enkripsi kata sandi baru
   // Perbarui data pengguna di database
-  await runQuery('UPDATE users SET username = ?, email = ?, password = ? WHERE id_user = ?', [username, email, hashedPassword, userId]);
-  return true; // Jika berhasil memperbarui pengguna
+  await runQuery('UPDATE users SET password = ? WHERE id_user = ?', [ hashedPassword, userId]);
+  return true; 
 };
 
 const getAllUsers = async () => {
@@ -39,7 +38,7 @@ const findUserByEmail = async (email) => {
 };
 
 const findUserById = async (userId) => {
-    return await runQuery('SELECT username,email,roles FROM users WHERE id_user = ?', [userId]);
+    return await runQuery('SELECT username,email,roles,password FROM users WHERE id_user = ?', [userId]);
 };
 
 module.exports = {

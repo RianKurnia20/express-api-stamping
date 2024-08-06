@@ -7,11 +7,7 @@ const middlewareHandle = require('../middleware/middlewareHandle.js')
 const router = express.Router();
 
 // PATCH - UPDATE
-router.patch('/:id', [
-  check('username', 'Please enter a username').optional().not().isEmpty(),
-  check('email', 'Please enter a valid email').optional().isEmail(),
-  check('password', 'Please enter a password with 6 or more characters').optional().isLength({ min: 6 })
-], usersController.updateUser);
+router.patch('/password', usersController.changePassword);
 
 // POST - CREATE
 router.post('/signup', [

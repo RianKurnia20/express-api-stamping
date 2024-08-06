@@ -64,22 +64,33 @@ const createNewUser = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
-  const { username, email, password } = req.body;
+const changePassword = async (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  const { old_password, new_password } = req.body 
+  if (!token) {
+    return handleResponse(res, 'Token not found', 401)
+  }
+  if(!old_password || !new_password) {
+    return handleResponse(res, 'All fields are required', 400)
+  }
+
   try {
-    // Check body apakah ada kesalahan pengiriman
-    if(!username || !email || !password) {
-      return handleResponse(res, 'All fields are required', 400)
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
     // Check user data pada table database
-    const checkUser = await userModel.findUserById(req.params.id)
+    const checkUser = await userModel.findUserById(decoded.id_user)
     if(!checkUser[0]){
       return handleResponse(res, 'User id not found', 404)
     }
 
+    const passwordMatch = await bcrypt.compare(old_password, checkUser[0].password);
+    if (!passwordMatch) {
+      return handleResponse(res, 'Old password wrong', 401)
+    }
     // Lakukan update jika semua validasi sudah lewat
-    await userModel.updateUserById(req.params.id, req.body);
-    handleResponse(res, 'Update user data successfully')
+    await userModel.updateUserById(decoded.id_user, new_password);
+    handleResponse(res, 'Change password success')
   } catch (error) {
     handleError(res, error)
   }
@@ -122,7 +133,7 @@ const getUserById = async (req, res) => {
 
 module.exports = {
   createNewUser,
-  updateUser,
+  changePassword,
   deleteUser,
   getAllUsers,
   getUserById

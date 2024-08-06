@@ -59,11 +59,26 @@ const allowCrossDomain = (req, res, next) => {
   }
 };
 
+const corsOptions = {
+  origin: [
+    'http://192.168.148.125:4173', // Ganti dengan domain frontend Anda
+    'https://192.168.148.125:4173',
+    'http://192.168.148.125:3000',
+    'https://192.168.148.125:3000',
+    'http://localhost:3000',
+    ],
+  credentials: true, // Mengizinkan pengiriman cookies
+  methods: 'GET,POST,PUT,DELETE,PATCH',
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+  exposedHeaders: ['set-cookie']
+};
+
 
 module.exports = {
   logRequest,
   errorMessage,
   checkPermission,
   authenticateToken,
-  allowCrossDomain
+  allowCrossDomain,
+  corsOptions
 }
