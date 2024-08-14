@@ -8,7 +8,7 @@ const runQuery = async (query, params = []) => {
 // Get all data production
 const getAllProduction = async () => {
   return await runQuery(
-    `SELECT p.id_production, p.date, p.shift, (p.ok - p.ng) as ok, p.ng, p.reject_setting, p.dummy, p.production_time, p.stop_time, p.dandori_time, pca.id_machine, pca.id_product, pca.id_kanagata, product.name,  TRUNCATE((p.ok - p.ng) as ok / ((p.production_time + p.dandori_time + p.stop_time) * kanagata.cavity * pca.speed) * 100, 2) as kadoritsu
+    `SELECT p.id_production, DATE_FORMAT(p.date,'%Y-%m-%d %H:%i:%s') AS date, p.shift, (p.ok - p.ng) as ok, p.ng, p.reject_setting, p.dummy, p.production_time, p.stop_time, p.dandori_time, pca.id_machine, pca.id_product, pca.id_kanagata, product.name,  TRUNCATE((p.ok - p.ng) / ((p.production_time + p.dandori_time + p.stop_time) * kanagata.cavity * pca.speed) * 100, 2) as kadoritsu
     FROM production as p
     JOIN pca ON p.id_pca = pca.id_pca
     JOIN product ON pca.id_product = product.id_product
