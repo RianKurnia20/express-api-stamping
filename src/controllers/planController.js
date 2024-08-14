@@ -23,7 +23,11 @@ const newPlan = async (req, res) => {
     if (qty <= 0) {
       return handleResponse(res, "Quantity must be greater than 0", 400);
     }
-    
+
+    const checkingDate = await planModel.validationPlanByDate(date_start, date_end, shift, id_pca)
+    if (checkingDate.length > 0 && shift == checkingDate[0].shift) {
+      return handleResponse(res, "Plan for this product already exists for this date and shift", 400);
+    }
     const pca = await pcaModel.getPcaByIdPca(id_pca)
     const time_plan = (qty / (pca[0].speed * pca[0].cavity)).toFixed(1)
 
@@ -62,10 +66,16 @@ const updatedPlan = async (req, res) => {
       return handleResponse(res, "Quantity must be greater than 0", 400);
     }
 
+    const checkingDate = await planModel.validationPlanByDate(start, end, shift, id_pca)
+    if (checkingDate.length > 0) {
+      if(req.params.id != checkingDate[0].id_plan){
+        return handleResponse(res, "Plan for this product already exists for this date and shift", 400);
+      }
+    }
+
     const pca = await pcaModel.getPcaByIdPca(id_pca)
     const time_plan = (qty / (pca[0].speed * pca[0].cavity)).toFixed(1)
     req.body.time_plan = time_plan
-    console.log(req.body)
 
     await planModel.updatePlanById(req.params.id, req.body);
     handleResponse(res, "Update production plan successfully");

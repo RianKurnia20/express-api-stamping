@@ -226,7 +226,6 @@ const getTrendProductionByDate = async (req, res) => {
       date_end
     );
     const message = data.length === 0 ? "No data production" : "Success";
-    console.log(data)
     // Generate Array Date Range sesuai inputan request dari front end untuk ploting ke front end
     const dateRange = dateHandle.generateDateRange(date_start, date_end);
     const formattedData = processProduction(dateRange, data);

@@ -128,7 +128,7 @@ const filterProductionByIdMachineYesterday = async (id_machine, shift) => {
 const summaryMonthlyOee = async (id_machine, year, month) => {
   return await runQuery(
     `SELECT
-    TRUNCATE(SUM(p.production_time) / SUM(plan.time_plan) * 100, 1) as availability, 
+    TRUNCATE(SUM(p.production_time) / (SUM(p.production_time)+ SUM(p.stop_time)) * 100, 1) as availability, 
     TRUNCATE(SUM(p.ok) / SUM(plan.qty) * 100, 1) as productivity, 
     TRUNCATE(SUM(p.ok-p.ng) / SUM(p.ok) * 100, 1) as quality, 
     TRUNCATE(
@@ -153,8 +153,8 @@ const dailyOee = async (id_machine, year, month) => {
   return await runQuery(
     `
     SELECT pca.id_machine, DATE_FORMAT(p.date,'%Y-%m-%d') AS date, p.shift, 
-    TRUNCATE(SUM(p.production_time) / SUM(plan.time_plan) * 100, 1) as availability, 
-    TRUNCATE(SUM(p.ok) / SUM(plan.qty) *100, 1) as productivity, 
+    TRUNCATE(SUM(p.production_time) / (SUM(p.production_time) + SUM(p.stop_time)) * 100, 1) as availability, 
+    TRUNCATE(SUM(p.ok) / SUM(plan.qty) * 100, 1) as productivity,
     TRUNCATE(SUM(p.ok-p.ng) / SUM(p.ok) *100, 1) as quality, 
     TRUNCATE( 
       TRUNCATE(SUM(p.production_time) / SUM(plan.time_plan) * 100, 1) * 
@@ -173,14 +173,14 @@ const dailyOee = async (id_machine, year, month) => {
   );
 };
 
-// const updateProductionById = async (id, machineData) => {
-//   const { reject_setting, ng, dummy } = machineData;
-//   await runQuery(
-//     "UPDATE production SET reject_setting = ?, ng = ?, dummy = ? WHERE id_production = ?",
-//     [reject_setting, ng, dummy, id]
-//   );
-//   return true;
-// };
+  // const updateProductionById = async (id, machineData) => {
+  //   const { reject_setting, ng, dummy } = machineData;
+  //   await runQuery(
+  //     "UPDATE production SET reject_setting = ?, ng = ?, dummy = ? WHERE id_production = ?",
+  //     [reject_setting, ng, dummy, id]
+  //   );
+  //   return true;
+  // };
 
 const updateProductionById = async (id, machineData) => {
   const { ng, dummy } = machineData;

@@ -66,6 +66,7 @@ const corsOptions = {
     'http://192.168.148.125:3000',
     'https://192.168.148.125:3000',
     'http://localhost:3000',
+    'http://localhost:4173',
     ],
   credentials: true, // Mengizinkan pengiriman cookies
   methods: 'GET,POST,PUT,DELETE,PATCH',
