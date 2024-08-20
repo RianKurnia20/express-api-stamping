@@ -1,4 +1,5 @@
 const productionModel = require("../models/productionModel");
+const planModel = require("../models/planModel")
 const dateHandle = require("../middleware/dateHandle");
 
 // fungsi untuk handle response permintaan
@@ -433,6 +434,24 @@ const getDailyOee = async (req, res) => {
   }
 }
 
+const createProduction = async (req, res) => {
+  try {
+    let plan = await planModel.getDetailPlan(req.body.production_data.id_plan)
+    plan = plan[0]
+    if(plan){
+      req.body.production_data.shift = plan.shift
+      req.body.production_data.date = plan.start
+      await productionModel.addProduction(req.body.production_data) 
+      return handleResponse(res, "Production data created")
+    }else{
+      return handleResponse(res, 'Production plan required', 400)
+    }
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
+
 module.exports = {
   getAllProduction,
   getAllProductionFilterMachineMonth,
@@ -447,5 +466,6 @@ module.exports = {
   getFiscalProductionByYearMonth,
   getSummarySalesAndRejectCost,
   getSummaryMonthlyOee,
-  getDailyOee
+  getDailyOee,
+  createProduction
 };

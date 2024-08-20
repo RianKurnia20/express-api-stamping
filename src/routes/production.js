@@ -18,6 +18,6 @@ router.get('/fiscal', productionController.getFiscalProductionByYearMonth)
 router.get('/fiscal/sales', productionController.getSummarySalesAndRejectCost)
 
 router.patch('/:id', productionController.updateProduction);
-
+router.post('/', productionController.createProduction)
 
 module.exports = router

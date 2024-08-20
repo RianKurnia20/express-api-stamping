@@ -30,6 +30,7 @@ const getAllProductionFilterMachineMonth = async (id_machine, year, month) => {
     AND YEAR(p.date) = ? 
     AND MONTH(p.date) = ?
     AND p.deleted_at is null
+    ORDER BY p.date desc
     `,
     [id_machine, year, month]
   );
@@ -173,14 +174,14 @@ const dailyOee = async (id_machine, year, month) => {
   );
 };
 
-  // const updateProductionById = async (id, machineData) => {
-  //   const { reject_setting, ng, dummy } = machineData;
-  //   await runQuery(
-  //     "UPDATE production SET reject_setting = ?, ng = ?, dummy = ? WHERE id_production = ?",
-  //     [reject_setting, ng, dummy, id]
-  //   );
-  //   return true;
-  // };
+// const updateProductionById = async (id, machineData) => {
+//   const { reject_setting, ng, dummy } = machineData;
+//   await runQuery(
+//     "UPDATE production SET reject_setting = ?, ng = ?, dummy = ? WHERE id_production = ?",
+//     [reject_setting, ng, dummy, id]
+//   );
+//   return true;
+// };
 
 const updateProductionById = async (id, machineData) => {
   const { ng, dummy } = machineData;
@@ -269,6 +270,37 @@ const summarySalesAndRejectCost = async (year) => {
   );
 };
 
+const addProduction = async (production_data) => {
+  const {
+    id_pca,
+    id_plan,
+    ok,
+    ng,
+    reject_setting,
+    production_time,
+    stop_time,
+    dandori_time,
+    date, 
+    shift
+  } = production_data;
+  await runQuery(
+    `INSERT INTO production (date, shift, id_pca, id_plan, ok, ng, reject_setting, production_time, stop_time, dandori_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      date,
+      shift,
+      id_pca,
+      id_plan,
+      ok,
+      ng,
+      reject_setting,
+      production_time,
+      stop_time,
+      dandori_time,
+    ]
+  );
+  return true;
+};
+
 module.exports = {
   getAllProduction,
   filterProductionByDate,
@@ -282,5 +314,6 @@ module.exports = {
   getAllProductionFilterMachineMonth,
   summarySalesAndRejectCost,
   summaryMonthlyOee,
-  dailyOee
+  dailyOee,
+  addProduction,
 };

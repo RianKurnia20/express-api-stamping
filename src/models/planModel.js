@@ -14,6 +14,20 @@ const addPlan = async (id_pca, qty, shift, date_start, date_end, time_plan) => {
   return true;
 };
 
+const searchPlanByIdPca = async (id_pca) => {
+  return await runQuery(
+    `SELECT p.id_plan, p.qty, pca.id_machine, pca.id_product, product.name, pca.id_kanagata, DATE_FORMAT(p.start,'%Y-%m-%d %H:%i:%s') AS start, DATE_FORMAT(p.end,'%Y-%m-%d %H:%i:%s') AS end, p.shift
+    FROM plan p
+    LEFT JOIN production prod ON p.id_plan = prod.id_plan
+    JOIN pca on p.id_pca = pca.id_pca
+    JOIN product on pca.id_product = product.id_product
+    WHERE prod.id_plan IS NULL
+    AND p.id_pca = ?
+    ORDER BY p.start asc`,
+    [id_pca]
+  )
+}
+
 const getAllPlan = async (id_plan = null, id_machine = null) => {
   if (!id_plan) {
     let query = `
@@ -45,6 +59,12 @@ const getPlanById = async (id_plan = null) => {
     [id_plan]
   );
 };
+
+const getDetailPlan = async (id_plan) => {
+  return await runQuery(
+    `SELECT * FROM plan WHERE id_plan = ?`, [id_plan]
+  )
+}
 
 const updatePlanById = async (id_plan, planData) => {
   const { id_pca, qty, shift, start, end, time_plan } = planData;
@@ -84,5 +104,7 @@ module.exports = {
   addPlan,
   updatePlanById,
   deletePlanById,
-  validationPlanByDate
+  validationPlanByDate,
+  searchPlanByIdPca,
+  getDetailPlan
 };

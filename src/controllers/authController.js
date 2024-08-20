@@ -29,7 +29,7 @@ const loginUser = async (req, res) => {
     // Variabel waktu expired token dalam format jam
     // const expiresIn = 86400
     // Buat token JWT
-    const token = jwt.sign({ id_user: user[0].id_user, role: user[0].roles }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    const token = jwt.sign({ id_user: user[0].id_user, role: user[0].roles }, process.env.JWT_SECRET, { expiresIn: '6h' });
     const role = user[0].role
 
     // coba taruh di cookie http respons

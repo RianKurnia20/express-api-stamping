@@ -39,6 +39,20 @@ const newPlan = async (req, res) => {
   }
 };
 
+const searchPlanByIdPca = async (req, res) => {
+  const { id_pca } = req.query;
+  let data
+  try {
+    if (id_pca) {
+      data = await planModel.searchPlanByIdPca(id_pca) 
+    }
+    const message = data.length === 0 ? "No plan data" : "Success"
+    handleResponse(res, message, 200, data);
+  } catch (error) {
+    handleError(res, error)
+  }
+}
+
 const getAllPlan = async (req, res) => {
   const { id_plan, id_machine } = req.query;
   let data, message;
@@ -110,4 +124,5 @@ module.exports = {
   getAllPlan,
   updatedPlan,
   deletePlan,
+  searchPlanByIdPca
 };
